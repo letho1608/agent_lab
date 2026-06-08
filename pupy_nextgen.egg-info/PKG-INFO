@@ -1,0 +1,165 @@
+Metadata-Version: 2.4
+Name: pupy-nextgen
+Version: 2.0.0
+Summary: Windows-focused post-exploitation framework
+Author-email: Pupy Team <pupy@example.com>
+Maintainer-email: Pupy Team <pupy@example.com>
+License: BSD-3-Clause
+Project-URL: Homepage, https://github.com/n1nj4sec/pupy
+Project-URL: Documentation, https://pupy.readthedocs.io/
+Project-URL: Repository, https://github.com/n1nj4sec/pupy.git
+Project-URL: Issues, https://github.com/n1nj4sec/pupy/issues
+Project-URL: Changelog, https://github.com/n1nj4sec/pupy/blob/master/CHANGELOG.md
+Keywords: post-exploitation,pentesting,red-team,windows,c2
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Information Technology
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Security
+Classifier: Topic :: System :: Networking
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: pycryptodome>=3.21.0
+Requires-Dist: pefile>=2024.3.0
+Requires-Dist: PyYAML>=6.0.2
+Requires-Dist: netaddr>=0.10.1
+Requires-Dist: ecdsa>=0.18.0
+Requires-Dist: paramiko>=4.0.0
+Requires-Dist: tinyec @ https://github.com/alxchk/tinyec/archive/master.zip
+Requires-Dist: psutil>=6.1.0
+Requires-Dist: netifaces>=0.11.0
+Requires-Dist: pylzma>=0.5.0
+Requires-Dist: colorama>=0.4.6
+Requires-Dist: mss>=10.0.0
+Requires-Dist: pyOpenSSL>=24.1.0
+Requires-Dist: cryptography>=42.0.0
+Requires-Dist: scapy>=2.5.0
+Requires-Dist: impacket>=0.12.0
+Requires-Dist: dnslib>=0.9.24
+Requires-Dist: http-parser>=0.9.0
+Requires-Dist: cerberus>=1.3.5
+Requires-Dist: logutils>=0.3.5
+Requires-Dist: secretstorage>=3.3.1
+Requires-Dist: pypykatz>=0.6.13
+Requires-Dist: ed25519>=1.5
+Requires-Dist: pygments>=2.18.0
+Requires-Dist: requests>=2.32.0
+Requires-Dist: tornado>=6.4.2
+Requires-Dist: win_inet_pton>=1.1.0
+Requires-Dist: msgpack>=1.0.8
+Requires-Dist: hexdump>=3.3
+Requires-Dist: fusepy>=3.0.1
+Requires-Dist: defusedxml>=0.7.1
+Requires-Dist: keyboard>=0.13.5
+Requires-Dist: dateparser>=1.2.0
+Requires-Dist: puttykeys>=1.0.0
+Requires-Dist: pyelftools>=0.31
+Requires-Dist: filemagic>=1.6
+Requires-Dist: xattr>=0.10.2
+Requires-Dist: dukpy>=0.2.3
+Requires-Dist: chardet>=5.2.0
+Requires-Dist: urllib-auth @ https://github.com/alxchk/urllib-auth/archive/master.zip
+Requires-Dist: http_request>=1.0.0
+Requires-Dist: kcp @ git+https://github.com/n1nj4sec/pykcp
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: pytest-cov>=3.0.0; extra == "dev"
+Requires-Dist: black>=22.0.0; extra == "dev"
+Requires-Dist: flake8>=4.0.0; extra == "dev"
+Requires-Dist: mypy>=0.950; extra == "dev"
+Requires-Dist: ruff>=0.1.0; extra == "dev"
+Requires-Dist: bandit>=1.7.0; extra == "dev"
+Requires-Dist: memory-profiler>=0.60.0; extra == "dev"
+Provides-Extra: docs
+Requires-Dist: sphinx>=4.0.0; extra == "docs"
+Requires-Dist: sphinx-rtd-theme>=1.0.0; extra == "docs"
+
+# Pupy-NextGen
+
+Windows post-exploitation framework and C2 server.
+
+## Features
+
+- **95+ post-exploitation modules** for Windows targets
+- **10 external tools** integrated (BeRoot, LaZagne, Mimikatz, etc.)
+- **Multiple transport handlers** (HTTP, DNS, TCP)
+- **Encrypted communications** with anti-detection features
+- **Web-based C&C interface** using Tornado
+- **Payload generation** for Windows x64
+
+## Quick Start
+
+### Installation
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Start C&C server
+python main.py 1
+
+# Generate Windows payload
+python main.py 2
+```
+
+### Usage
+
+1. Start the server: `python main.py 1`
+2. Generate payload: `python main.py 2`
+3. Deploy payload to target
+4. Connect from pupysh: `pupysh`
+
+## Architecture
+
+- **Server**: Tornado web server with WebSocket support
+- **Client**: Reflective DLL injection with encrypted communications
+- **Modules**: Dynamic loading of post-exploitation capabilities
+- **Network**: Multiple transport protocols with failover
+
+## Modules
+
+### Credentials
+- mimikatz, lazagne, creddump, browser_loot, netcreds
+
+### Execution
+- shell_exec, pyexec, psh (PowerShell), memory_exec
+
+### Reconnaissance
+- ps, screenshot, get_info, netstat, dns, port_scan
+
+### Lateral Movement
+- psexec, portfwd, socks5proxy
+
+### Persistence
+- persistence, install, scheduled_tasks
+
+## Security
+
+- AES-256 encryption
+- Certificate pinning
+- Token-based authentication
+- Beacon randomization
+- Anti-VM detection
+
+## Requirements
+
+- Python 3.9+
+- Windows target systems (x64)
+- Network connectivity
+
+## Documentation
+
+See [INSTALL.md](INSTALL.md) for detailed installation instructions.
+
+## License
+
+BSD 3-Clause License
+
+## Disclaimer
+
+This tool is for educational and authorized security testing purposes only.

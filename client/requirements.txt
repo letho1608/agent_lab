@@ -1,0 +1,12 @@
+# Client payload dependencies – align with root (Python 3.9+ only)
+pyaes>=1.6.1
+psutil>=6.1.0
+rsa>=4.9
+netaddr>=0.10.1
+tinyec @ https://github.com/alxchk/tinyec/archive/master.zip
+poster
+win_inet_pton>=1.1.0
+dnslib>=0.9.24
+dukpy>=0.2.3
+zeroconf>=0.38.0
+urllib-auth @ https://github.com/alxchk/urllib-auth/archive/master.zip

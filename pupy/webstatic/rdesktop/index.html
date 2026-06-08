@@ -1,0 +1,42 @@
+<html>
+<head>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-1HhdkLx8d1H5lN0YcMruYD1bVvxaP1+2F1wE3jO7qFqM=" crossorigin="anonymous"></script>
+    <script src="static/rdesktop/rdesktop.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+        var rdHandler = null;
+        $(document).ready(function() {
+            if (!("WebSocket" in window)) {
+                $('#messages').append("Your browser does not support websocket !");
+            }
+	    
+            else{
+                window.rdHandler = new RDHANDLER({{port}});
+		window.rdHandler.start();
+            }
+            //disable image drag
+            $("#screenimg").bind('dragstart', function(){
+                return false; 
+            });
+	    
+            $( "#screen" ).mousemove(function( event ) {
+                window.rdHandler.on_mouse_move(event);
+            });
+	    
+            $( "#screen" ).click(function( event ) {
+                window.rdHandler.on_click(event);
+            });
+	    
+            $( "body" ).keypress(function( event ) {
+                window.rdHandler.on_key_press(event);
+            });
+        });
+    </script>
+
+  <div id="screen">
+        <img id="screenimg"></img>
+    </div>
+    <div id="messages"></div>
+</body>
+</html>

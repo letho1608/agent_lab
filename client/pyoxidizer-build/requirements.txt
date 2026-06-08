@@ -1,0 +1,5 @@
+# PyOxidizer payload – align with root/client (Python 3.9+)
+netaddr>=0.10.1
+pyaes>=1.6.1
+tinyec @ https://github.com/alxchk/tinyec/archive/master.zip
+rsa>=4.9

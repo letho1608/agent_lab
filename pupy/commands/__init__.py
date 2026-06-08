@@ -1,0 +1,185 @@
+# -*- encoding: utf-8 -*-
+
+
+__all__ = ('InvalidCommand', 'Commands')
+
+import os
+import importlib.util
+import importlib.machinery
+
+from pupy.pupylib.PupyCompleter import commands_completer
+from pupy.pupylib.PupyModule import PupyArgumentParser
+
+from pupy.network.lib.convcompat import shlex
+
+
+class InvalidCommand(Exception):
+    pass
+
+
+class CommandsNamespace(object):
+
+    __slots__ = ('module', 'args')
+
+    def __init__(self, module, args):
+        self.module = module
+        self.args = args
+
+
+class Commands(object):
+    SUFFIXES = tuple(importlib.machinery.SOURCE_SUFFIXES)
+
+    def __init__(self):
+        self._commands = {}
+        self._commands_stats = {}
+        self._refresh()
+
+    def _refresh(self):
+        commands_paths = [
+            os.path.dirname(__file__)
+        ]
+
+        files = {}
+
+        for path in commands_paths:
+            files.update({
+                '.'.join(x.rsplit('.', 1)[:-1]):os.path.join(path, x) \
+                for x in os.listdir(path) if x.endswith(self.SUFFIXES) and \
+                not x.startswith('__init__')
+            })
+
+        for command in files:
+            source = files[command]
+
+            try:
+                current_stat = os.stat(source)
+            except OSError:
+                continue
+
+            if command not in self._commands or self._commands_stats[command] != current_stat.st_mtime:
+                try:
+                    spec = importlib.util.spec_from_file_location(command, source)
+                    mod = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(mod)
+                    self._commands[command] = mod
+                    self._commands_stats[command] = current_stat.st_mtime
+                except (IOError, OSError):
+                    pass
+
+    def _get_command(self, cmdline, aliases, modules, server=None, refresh=True):
+        argv = shlex.split(cmdline)
+        if not argv:
+            raise InvalidCommand(cmdline)
+
+        argv0 = argv[0]
+        args = []
+
+        if len(argv) > 1:
+            args = argv[1:]
+
+        if argv0 in aliases:
+            aliased = aliases[argv0]
+            if '{' in aliased or '%' in aliased:
+                aargv = shlex.split(aliased.format(*args))
+                argv0, args = aargv[0], aargv[1:]
+            else:
+                aargv = shlex.split(aliased)
+                argv0, args = aargv[0], aargv[1:] + args
+
+        if argv0 not in self._commands and refresh:
+            self._refresh()
+
+        if argv0 not in self._commands:
+            found = False
+            for module in modules:
+                if argv0 == module.get_name():
+                    args.insert(0, argv0)
+                    argv0 = 'run'
+                    found = True
+                    break
+
+            # Khi không có client, iter_modules(by_clients=True) trả về rỗng.
+            # Vẫn resolve tên module qua server.modules để "edit", "get_info"...
+            # chuyển thành "run edit", "run get_info" (run sẽ báo "No clients" nếu cần).
+            if not found and server is not None:
+                mods = getattr(server, 'modules', None)
+                if mods and argv0 in mods:
+                    args.insert(0, argv0)
+                    argv0 = 'run'
+                    found = True
+
+            if not found:
+                raise InvalidCommand(argv0)
+
+        return self._commands[argv0], args
+
+    def has(self, command):
+        if command not in self._commands:
+            self._refresh()
+
+        return command in self._commands
+
+    def get(self, command):
+        if command not in self._commands:
+            self._refresh()
+
+        return self._commands.get(command)
+
+    def execute(self, server, handler, config, cmdline, clients_filter=None):
+        aliases = dict(config.items('aliases'))
+        command, args = self._get_command(
+            cmdline, aliases,
+            list(server.iter_modules(
+                by_clients=True,
+                clients_filter=clients_filter or handler.default_filter)),
+            server=server)
+
+        parser = command.parser
+        if callable(parser):
+            parser = parser(server, handler, config)
+
+        parsed_args = parser.parse_args(args)
+
+        old_filter = handler.default_filter
+
+        if clients_filter:
+            handler.default_filter = clients_filter
+
+        try:
+            command.do(server, handler, config, parsed_args)
+        finally:
+            if clients_filter and handler.default_filter == clients_filter:
+                handler.default_filter = old_filter
+
+    def list(self, refresh=True):
+        if refresh:
+            self._refresh()
+
+        for command in self._commands:
+            module = self._commands[command]
+
+            yield command, module.usage
+
+    def completer(self, context, cmdline):
+        server, handler, config = context.server, context.handler, context.config
+
+        aliases = dict(config.items('aliases'))
+        modules = list(server.iter_modules(
+            by_clients=True,
+            clients_filter=handler.default_filter))
+
+        try:
+            command, args = self._get_command(
+                cmdline, aliases, modules, server=server, refresh=False)
+            parser = None
+            if hasattr(command.parser, 'add_help'):
+                parser = command.parser
+            else:
+                parser = command.parser(server, PupyArgumentParser, config)
+
+            completer = parser.get_completer()
+
+            return completer.complete, command.__name__, args
+
+        except InvalidCommand:
+            return commands_completer, '', ''
