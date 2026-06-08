@@ -1,0 +1,38 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.class
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Build and distribution
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+
+# Pupy specifics
+.pupy_history
+output/
+data/downloads/*
+data/screenshots/*
+data/pcaps/*
+data/logs/*
+!data/wwwroot/
+
+# Environment
+.env
+.venv
+env/
+venv/
+ENV/
