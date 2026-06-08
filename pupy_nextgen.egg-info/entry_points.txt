@@ -1,3 +1,0 @@
-[console_scripts]
-pupygen = pupy.cli.pupygen:main
-pupysh = pupy.cli.pupysh:main
