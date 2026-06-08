@@ -48,6 +48,6 @@ if not getattr(sys, '__from_build_library_zip_compiler__', False):
             _install_win_stubs()
         from .PupyCmd import PupyCmdLoop
         from .PupyService import PupyService
-        from .PupyModule import PupyModule
+        from .PupyModule import PupyModule, PupyArgumentParser
         from .PupyClient import PupyClient
         from .PupyServer import PupyServer

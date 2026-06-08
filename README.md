@@ -1,36 +1,37 @@
 # Pupy-NextGen
+```text
+  _____  _    _  _____ __     __
+ |  __ \| |  | ||  __ \\ \   / /
+ | |__) | |  | || |__) |\ \_/ / 
+ |  ___/| |  | ||  ___/  \   /  
+ | |    | |__| || |       | |   
+ |_|     \____/ |_|       |_|   
+  Memory-Only Remote Administration
+```
 
-Windows post-exploitation framework and C2 server.
-
-## Overview
-
-Pupy-NextGen is a powerful, multi-platform remote administration tool (RAT) and post-exploitation framework focused on stealth and memory-only execution.
+## Tech Stack & Focus
+- **Core**: RPYC-based interaction (Treat remote targets as local Python objects).
+- **Stealth**: `pupyimporter` for RAM-only module loading. No disk writes, no temporary files.
+- **OPSEC**: Removed all legacy binary bloat. Post-ex relies on **Pure Python** (pypykatz, impacket).
+- **Transport**: Layered protocols (SSL, Obfs3, Scrambled, HTTP-wrapped) to bypass Deep Packet Inspection.
 
 ## Quick Start
+```bash
+# Install dependencies
+pip install -r requirements.txt
 
-1. Install dependencies: `pip install -r requirements.txt`
-2. Start the server: `python main.py`
-3. Use the shell: `python -m pupy.cli.pupysh`
+# Start C2 Server
+python main.py
 
-## Architecture
-
-- **Server**: Tornado-based C2 server.
-- **Agent**: Python-based agent with in-memory loading capabilities.
-- **Transport**: Layered communication stack (SSL, HTTP, Obfs3, etc.).
-
-## Modules
-
-- **Gather**: `get_info`, `screenshot`, `creds`.
-- **Exploit**: `mimikatz`, `bypassuac`.
-- **Manage**: `ps`, `shell_exec`.
+# Interactive Shell
+python -m pupy.cli.pupysh
+```
 
 ## Features
-
-- **95+ post-exploitation modules** for Windows targets
-- **Pure Python** credential gathering using pypykatz
-- **Multiple transports** for stealthy communication
-- **In-Memory execution** of Python and PE files
+- **Fileless Execution**: Run Python modules and PE binaries directly in memory.
+- **Unified Credentials**: One-stop module `creds` using pypykatz (no Mimikatz.exe needed).
+- **Windows/Linux**: Multi-platform support with consistent API.
+- **Reflective Injection**: Advanced DLL/PE loading techniques.
 
 ## License
-
-BSD 3-Clause License
+BSD 3-Clause
